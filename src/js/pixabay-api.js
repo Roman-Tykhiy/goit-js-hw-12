@@ -1,12 +1,21 @@
+import axios from "axios";
+
 export { fetchPixabay };
-    function fetchPixabay(Url) {
-        return fetch(Url) 
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(res.statusText);
-            }
-            return res.json();
-        })
+const API_KEY = "47389076-066c089ec4ce8fe31e83dc6f8";
+   async function fetchPixabay(Url, userInput, pages = 1) {
+       const responce = await axios(`${Url}`, {
+           params: {
+               key: API_KEY,
+               q: `${userInput}`,
+               image_type: "photo",
+               orientation: "horizontal",
+               safesearch: "true",
+               per_page: 15,
+               page: `${pages}`
+           }
+       }); 
+       return responce;
+       
     }
     
    

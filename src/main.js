@@ -12,15 +12,19 @@ const lightBox = new SimpleLightbox(".gallery-item a", {
 const form = document.querySelector(".form");
 const list = document.querySelector(".list");
 const loader = document.querySelector(".loader");
+const loadMore = document.querySelector(".load-more");
+let pages ;
 loader.style.visibility = 'hidden';
-const API_KEY = "47389076-066c089ec4ce8fe31e83dc6f8";
+loadMore.style.visibility = 'hidden';
+const urlPixeBay = `https://pixabay.com/api/`;
 form.addEventListener("submit", handleSub);
-
 function handleSub(event) {
     event.preventDefault();
+    pages = 1;
     list.innerHTML = "";
     loader.style.visibility = '';
     const inputValue = event.target.elements.input.value.trim();
+    getUserInput(inputValue)
         if (inputValue.length < 1) {
         loader.style.visibility = 'hidden';
         return iziToast.show({
@@ -30,21 +34,11 @@ function handleSub(event) {
             messageColor: `#fff`,
             position: "topRight"
         });
-        
-        
     };
-    const params = new URLSearchParams({
-        key: API_KEY,
-        q: inputValue,
-        image_type: "photo",
-        orientation: "horizontal",
-        safesearch: "true"
-    }); 
-    const urlPixeBay = `https://pixabay.com/api/?${params}`;
     
- 
-    fetchPixabay (urlPixeBay)
-        .then((data) => {
+    fetchPixabay(urlPixeBay, inputValue, pages)
+        .then(({data}) => {
+            
             if (data.total === 0) {
                 list.innerHTML = "";
                 return iziToast.show({
@@ -52,11 +46,14 @@ function handleSub(event) {
             message: "Sorry, there are no images matching your search query. Please try again!",
             backgroundColor: `red`,
             messageColor: `#fff`,
-            position: "topRight"
-        })
+                    position: "topRight"
+                })   
             };
             list.innerHTML = crieteMarkap(data.hits);
             lightBox.refresh();
+            loadMore.style.visibility = '';
+           
+            
     })
         .catch((error)=> {
         iziToast.show({
@@ -71,11 +68,36 @@ function handleSub(event) {
         .finally(() => {
             loader.style.visibility = 'hidden';
             event.target.reset();
-       })
-
+        })
+    
 };
 
-
-
+function getUserInput(inputValue) {
+    
+    loadMore.addEventListener("click", onLoadMore);
+    async function onLoadMore() {
+        pages += 1;
+        
+        await fetchPixabay(urlPixeBay, inputValue, pages)
+         .then(({ data }) => {
+             list.insertAdjacentHTML("beforeend", crieteMarkap(data.hits));
+             inputValue = "";
+            
+    })
+         .catch((error)=> {
+             iziToast.show({
+               title: '',
+               message: `${error}`,
+              backgroundColor: `red`,
+              messageColor: `#fff`,
+              position: "topRight"
+        });
+        
+        })
+        .finally(() => {
+            
+        })
+}
+}
     
  
