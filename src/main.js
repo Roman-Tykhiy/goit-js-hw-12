@@ -81,7 +81,7 @@ function getUserInput(inputValue) {
         await fetchPixabay(urlPixeBay, inputValue, pages)
          .then(({ data }) => {
              list.insertAdjacentHTML("beforeend", crieteMarkap(data.hits));
-             inputValue = "";
+             
             
     })
          .catch((error)=> {
