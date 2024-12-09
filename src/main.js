@@ -16,16 +16,17 @@ const loadMore = document.querySelector(".load-more");
 let pages ;
 loader.style.visibility = 'hidden';
 loadMore.style.visibility = 'hidden';
-const urlPixeBay = `https://pixabay.com/api/`;
+
 form.addEventListener("submit", handleSub);
 function handleSub(event) {
     event.preventDefault();
-    pages = 1;
+    pages = 0;
     list.innerHTML = "";
     loader.style.visibility = '';
     const inputValue = event.target.elements.input.value.trim();
     getUserInput(inputValue)
-        if (inputValue.length < 1) {
+    if (inputValue.length < 1) {
+        
         loader.style.visibility = 'hidden';
         return iziToast.show({
             title: '',
@@ -36,7 +37,7 @@ function handleSub(event) {
         });
     };
     
-    fetchPixabay(urlPixeBay, inputValue, pages)
+    fetchPixabay(inputValue, pages = 1)
         .then(({data}) => {
             
             if (data.total === 0) {
@@ -71,14 +72,20 @@ function handleSub(event) {
         })
     
 };
-
+let userValue ;
 function getUserInput(inputValue) {
+    userValue = inputValue;
+     return userValue;
     
-    loadMore.addEventListener("click", onLoadMore);
-    async function onLoadMore() {
+}
+
+
+    
+loadMore.addEventListener("click", onLoadMore);
+async function onLoadMore() {
         pages += 1;
         
-        await fetchPixabay(urlPixeBay, inputValue, pages)
+        await fetchPixabay(userValue, pages)
          .then(({ data }) => {
              list.insertAdjacentHTML("beforeend", crieteMarkap(data.hits));
              
@@ -98,6 +105,3 @@ function getUserInput(inputValue) {
             
         })
 }
-}
-    
- 
