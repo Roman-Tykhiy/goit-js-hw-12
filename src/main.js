@@ -24,7 +24,7 @@ function handleSub(event) {
     const inputValue = event.target.elements.input.value.trim();
     getUserInput(inputValue)
     if (inputValue.length < 1) {
-        
+        loadMore.classList.replace("load-more-nohidden", "hidden");
         loader.style.visibility = 'hidden';
         return iziToast.show({
             title: '',
@@ -38,6 +38,7 @@ function handleSub(event) {
     fetchPixabay(inputValue, pages = 1)
         .then(({data}) => { 
             if (data.total === 0) {
+                loadMore.classList.replace("load-more-nohidden", "hidden");
                 list.innerHTML = "";
                 return iziToast.show({
             title: '',
@@ -49,7 +50,7 @@ function handleSub(event) {
             };
             list.innerHTML = crieteMarkap(data.hits);
             lightBox.refresh();
-            loadMore.classList.replace("hidden", "load-more-nohidden")
+            loadMore.classList.replace("hidden", "load-more-nohidden");
             
     })
         .catch((error)=> {
@@ -63,7 +64,7 @@ function handleSub(event) {
         
         })
         .finally(() => {
-            
+    
             event.target.reset();
         })
     
@@ -86,7 +87,7 @@ async function onLoadMore() {
              list.insertAdjacentHTML("beforeend", crieteMarkap(data.hits));
              lightBox.refresh();
              if (pages >= data.totalHits) {
-                 loadMore.classList.replace("load-more-nohidden", "hidden")
+                 loadMore.classList.replace("load-more-nohidden", "hidden");
                   iziToast.show({
             title: '',
             message: `We're sorry, but you've reached the end of search results.`,
