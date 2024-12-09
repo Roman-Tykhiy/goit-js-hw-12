@@ -15,14 +15,12 @@ const loader = document.querySelector(".loader");
 const loadMore = document.querySelector(".load-more");
 let pages ;
 loader.style.visibility = 'hidden';
-loadMore.style.visibility = 'hidden';
+
 
 form.addEventListener("submit", handleSub);
 function handleSub(event) {
     event.preventDefault();
-    pages = 0;
     list.innerHTML = "";
-    loader.style.visibility = '';
     const inputValue = event.target.elements.input.value.trim();
     getUserInput(inputValue)
     if (inputValue.length < 1) {
@@ -38,8 +36,7 @@ function handleSub(event) {
     };
     
     fetchPixabay(inputValue, pages = 1)
-        .then(({data}) => {
-            
+        .then(({data}) => { 
             if (data.total === 0) {
                 list.innerHTML = "";
                 return iziToast.show({
@@ -52,8 +49,7 @@ function handleSub(event) {
             };
             list.innerHTML = crieteMarkap(data.hits);
             lightBox.refresh();
-            loadMore.style.visibility = '';
-           
+            loadMore.classList.replace("hidden", "load-more-nohidden")
             
     })
         .catch((error)=> {
@@ -67,7 +63,7 @@ function handleSub(event) {
         
         })
         .finally(() => {
-            loader.style.visibility = 'hidden';
+            
             event.target.reset();
         })
     
@@ -84,11 +80,29 @@ function getUserInput(inputValue) {
 loadMore.addEventListener("click", onLoadMore);
 async function onLoadMore() {
         pages += 1;
-        
+        loader.style.visibility = '';
         await fetchPixabay(userValue, pages)
          .then(({ data }) => {
              list.insertAdjacentHTML("beforeend", crieteMarkap(data.hits));
-             
+             lightBox.refresh();
+             if (pages >= data.totalHits) {
+                 loadMore.classList.replace("load-more-nohidden", "hidden")
+                  iziToast.show({
+            title: '',
+            message: `We're sorry, but you've reached the end of search results.`,
+            backgroundColor: `red`,
+            messageColor: `#fff`,
+            position: "topRight"
+        });
+             }
+
+             const card = document.querySelector(".gallery-item");
+             const cardHeight = card.getBoundingClientRect().height;
+             window.scrollBy({
+                 left: 0,
+                 top: cardHeight * 2,
+                 behavior: "smooth"
+             })
             
     })
          .catch((error)=> {
@@ -102,6 +116,6 @@ async function onLoadMore() {
         
         })
         .finally(() => {
-            
+            loader.style.visibility = 'hidden';
         })
 }
